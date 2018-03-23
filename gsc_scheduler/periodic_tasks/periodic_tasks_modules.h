@@ -32,6 +32,7 @@
 //#include "MyApplication.h"
 //#include "MyLowLayerDriver.h"
 #include "../app/RGB_LEDs.h"
+#include "../app/BUTTON_LED_COLOR.h"
 /*============================================================================*/
 
 #endif

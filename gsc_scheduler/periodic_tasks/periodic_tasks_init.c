@@ -27,6 +27,7 @@
 /* -------- */
 #include "periodic_tasks_init.h"
 #include "periodic_tasks_modules.h"
+#include "HAL/Input_Config.h"
 
 
 /**************************************************************
@@ -51,6 +52,7 @@ void periodic_tasks_init_MclDrvs(void)
 void periodic_tasks_init_SysDrvs(void)
 {
 	init_leds();
+	Input_Config_portb_Button();
 }
 
 /**************************************************************

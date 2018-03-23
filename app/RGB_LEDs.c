@@ -17,7 +17,7 @@
 #define FAST_BLINK      (1000000)
 #define BLINK_DELAY     FAST_BLINK
 
-#define RED				(18) 
+#define RED				(18)
 #define RED_SHIFT		(1 << 18)
 #define GREEN			(19)
 #define GREEN_SHIFT		(1 << 19)
@@ -45,14 +45,14 @@ enum
 
 T_UBYTE re_LEDaction = TOGGLING;
 
-void delay_time(int);
-void init_leds();
-void red_on();
-void red_off();
+extern void delay_time(int);
+extern void init_leds();
+extern void red_on();
+extern void red_off();
+extern void blue_on();
+extern void blue_off();
 void green_on();
 void green_off();
-void blue_on();
-void blue_off();
 
 void app_rgb_led(void)
 {
@@ -80,6 +80,7 @@ void app_rgb_led(void)
 
 void app_rgb_led_fsm(void)
 {
+
 	static unsigned char rgb_state = 0;
 
 	if(re_LEDaction == OFF)
