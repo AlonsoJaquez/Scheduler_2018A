@@ -29,7 +29,11 @@
  */
 
 #include "fsl_debug_console.h"
+#include "fsl_adc16.h"
+#include "fsl_tpm.h"
+
 #include "board.h"
+#include <stdio.h>
 
 #include "pin_mux.h"
 #include "clock_config.h"
@@ -37,11 +41,14 @@
 #include "gsc_sch_core/gsc_sch_core.h"
 #include "gsc_sch_core_tick_isr.h"
 #include "core_cm0plus.h"
+
+
+#include "Change_LedColor.h"
+#include "MKL25Z4.h"
 /*******************************************************************************
  * Definitions
  ******************************************************************************/
-#define LED_INIT() LED_RED_INIT(LOGIC_LED_ON)
-#define LED_TOGGLE() LED_RED_TOGGLE()
+
 
 /*******************************************************************************
  * Prototypes
@@ -51,6 +58,8 @@
  * Variables
  ******************************************************************************/
 volatile unsigned int sys_tick_counter = 0;
+
+
 
 /*******************************************************************************
  * Code
@@ -65,6 +74,8 @@ int main(void)
 	BOARD_InitPins();
 	BOARD_BootClockRUN();
 	BOARD_InitDebugConsole();
+
+
 
 	/* SysTick Configuration */
 	SysTick_Config(48000000U/1000U); //This only applies for ARM Cores with SysTick capability
@@ -81,3 +92,4 @@ void SysTick_Handler(void)
  	sys_tick_counter++;
  	gsc_sch_core_tick_isr();
  }
+
