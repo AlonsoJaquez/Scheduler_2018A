@@ -41,7 +41,7 @@ void periodic_tasks_init_task_5tks(void);
 void periodic_tasks_init_task_10tks(void);
 void periodic_tasks_init_task_20tks(void);
 void periodic_tasks_init_task_50tks(void);
-void periodic_tasks_init_task_100tks(void);
+void periodic_tasks_init_task_200tks(void);
 void periodic_tasks_init_task_500tks(void);
 void periodic_tasks_init_task_1Mtks(void);
 

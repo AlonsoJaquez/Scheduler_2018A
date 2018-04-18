@@ -11,10 +11,16 @@
 #define RGB_LEDS_H
 
 
-
-extern void init_leds(void);
+extern void init_pins(void);
 extern void app_rgb_led(void);
 extern void app_rgb_led_fsm(void);
 
+extern void pin4_on();
+extern void pin4_off();
+extern void pin5_on();
+extern void pin5_off();
+
+extern void set_pins_inputs(void);
+extern void reinit_pins(void);
 
 #endif /* RGB_LEDS_H */

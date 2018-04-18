@@ -11,18 +11,43 @@
 #include <drivers_HAL/fsl_gpio.h>
 #include "MKL25Z4.h"
 #include "stdtypedef.h"
+#include "fsl_port.h"
 
 
 #define SLOW_BLINK      (10000000)
 #define FAST_BLINK      (1000000)
 #define BLINK_DELAY     FAST_BLINK
 
-#define RED				(18)
-#define RED_SHIFT		(1 << 18)
 #define GREEN			(19)
 #define GREEN_SHIFT		(1 << 19)
 #define BLUE			(1)
 #define BLUE_SHIFT		(1 << 1)
+#define RED				(18)
+#define RED_SHIFT		(1 << 18)
+
+#define PIN4				(4)
+#define PIN4_SHIFT		(1 << 4)
+#define PIN4_low		(0 << 4)
+
+#define PIN5				(5)
+#define PIN5_SHIFT		(1 << 5)
+
+
+#define PIN0				(0)
+#define PIN0_SHIFT		(0 << 0)
+
+#define PIN1				(1)
+#define PIN1_SHIFT		(0 << 1)
+
+
+#define PIN4_OFF		(GPIOC->PSOR = PIN4_SHIFT)
+#define PIN4_ON			(GPIOC->PCOR = PIN4_SHIFT)
+#define PIN4_TOGGLE		(GPIOC->PTOR = PIN4_SHIFT)
+
+#define PIN5_OFF		(GPIOC->PSOR = PIN5_SHIFT)
+#define PIN5_ON			(GPIOC->PCOR = PIN5_SHIFT)
+#define PIN5_TOGGLE		(GPIOC->PTOR = PIN5_SHIFT)
+
 
 #define RED_OFF			(GPIOB->PSOR = RED_SHIFT)
 #define RED_ON			(GPIOB->PCOR = RED_SHIFT)
@@ -45,14 +70,19 @@ enum
 
 T_UBYTE re_LEDaction = TOGGLING;
 
-extern void delay_time(int);
-extern void init_leds();
-extern void red_on();
-extern void red_off();
-extern void blue_on();
-extern void blue_off();
+void delay_time(int);
+void init_leds();
+void red_on();
+void red_off();
 void green_on();
 void green_off();
+void blue_on();
+void blue_off();
+
+
+
+
+
 
 void app_rgb_led(void)
 {
@@ -80,7 +110,6 @@ void app_rgb_led(void)
 
 void app_rgb_led_fsm(void)
 {
-
 	static unsigned char rgb_state = 0;
 
 	if(re_LEDaction == OFF)
@@ -166,6 +195,27 @@ void app_rgb_led_fsm(void)
 	}
 }
 
+void pin4_on(){
+	PIN4_ON;
+}
+
+void pin4_off()
+{
+	PIN4_OFF;
+
+}
+
+void pin5_on(){
+	PIN5_ON;
+}
+
+void pin5_off()
+{
+	PIN5_OFF;
+
+}
+
+
 void red_on(){
 	RED_ON;
 }
@@ -192,7 +242,8 @@ void blue_off(){
 
 /********************************************************************/
 
-void delay_time(int number){
+void delay_time(int number)
+{
   volatile int cnt;
   for(cnt=0;cnt<number;cnt++);
 }
@@ -202,61 +253,121 @@ void delay_time(int number){
 /*	init_leds()
  * initialize the ports for LEDs
  * ******************************************************************/
- 
+void set_pins_inputs(void)
+{
+	 PORT_SetPinMux(PORTB,0u, kPORT_MuxAsGpio);            /* PORTB0 (pin 54) is configured as TPM2_CH1 */
+	 PORT_SetPinMux(PORTB,1u, kPORT_MuxAsGpio);            /* PORTB1 (pin 54) is configured as TPM2_CH1 */
+	 PORT_SetPinMux(PORTC,4u, kPORT_MuxAsGpio);            /* PORTB1 (pin 54) is configured as TPM2_CH1 */
 
- void init_leds(void)
- {
-	 
-    /* 
-	 * Initialize the Red LED (PTB18)
-	 */
 
-		/* Turn on clock to PortB module */
+	//B0 CHANNEL PWM FAN INPUT
+
+	SIM->SCGC5 |= SIM_SCGC5_PORTB_MASK;
+
+
+	PORTB->PCR[0] = PORT_PCR_MUX(1);
+
+    // Set the initial output state to low
+	GPIOB->PSOR |= PIN0_SHIFT;
+
+	// Set the pins direction to inputs
+	GPIOB->PDDR |= PIN0_SHIFT;
+
+
+	//B0 CHANNEL PWM RESISTOR INPUT
+
 		SIM->SCGC5 |= SIM_SCGC5_PORTB_MASK;
 
-		/* Set the PTB18 pin multiplexer to GPIO mode */
+
+		PORTB->PCR[1] = PORT_PCR_MUX(1);
+
+	    // Set the initial output state to low
+		GPIOB->PSOR |= PIN1_SHIFT;
+
+		// Set the pins direction to inputs
+		GPIOB->PDDR |= PIN1_SHIFT;
+
+
+
+		SIM->SCGC5 |= SIM_SCGC5_PORTC_MASK;
+
+
+		PORTC->PCR[4] = PORT_PCR_MUX(1);
+
+
+		GPIOC->PSOR |= PIN4_low;
+
+
+		GPIOC->PDDR |= PIN4_low;
+}
+
+
+void init_pins(void)
+ {
+
+
+			SIM->SCGC5 |= SIM_SCGC5_PORTC_MASK;
+
+
+			PORTC->PCR[4] = PORT_PCR_MUX(1);
+
+
+			GPIOC->PSOR |= PIN4_low;
+
+
+			GPIOC->PDDR |= PIN4_SHIFT;
+
+
+    /*
+	 * Initialize the Red LED (PTB18)
+
+
+		 Turn on clock to PortB module
+		SIM->SCGC5 |= SIM_SCGC5_PORTB_MASK;
+
+    Set the PTB18 pin multiplexer to GPIO mode
 		PORTB->PCR[18] = PORT_PCR_MUX(1);
 
-		/* Set the initial output state to high */
+		 Set the initial output state to high
 		GPIOB->PSOR |= RED_SHIFT;
 
-		/* Set the pins direction to output */
+		 Set the pins direction to output
 		GPIOB->PDDR |= RED_SHIFT;
 
 
-	/*
-	 * Initialize the Green LED (PTB19)
-	 */
 
-		/* Turn on clock to PortB module */
+	 * Initialize the Green LED (PTB19)
+
+
+		 Turn on clock to PortB module
 		SIM->SCGC5 |= SIM_SCGC5_PORTB_MASK;
 
-		/* Set the PTB19 pin multiplexer to GPIO mode */
+		Set the PTB19 pin multiplexer to GPIO mode
 		PORTB->PCR[19] = PORT_PCR_MUX(1);
 
-		/* Set the initial output state to high */
+		 Set the initial output state to high
 		GPIOB->PSOR |= GREEN_SHIFT;
 
-		/* Set the pins direction to output */
-		GPIOB->PDDR |= GREEN_SHIFT;
+         Set the pins direction to output
+		GPIOB->PDDR |= GREEN_SHIFT;  */
 
 
 
 	/*
 	 * Initialize the Blue LED (PTD1)
-	 */
 
-		/* Turn on clock to PortB module */
+
+		Turn on clock to PortB module
 		SIM->SCGC5 |= SIM_SCGC5_PORTD_MASK;
 
-		/* Set the PTD1 pin multiplexer to GPIO mode */
+		Set the PTD1 pin multiplexer to GPIO mode
 		PORTD->PCR[1]= PORT_PCR_MUX(1);
 
-		/* Set the initial output state to high */
+		Set the initial output state to high
 		GPIOD->PSOR = BLUE_SHIFT;
 
-		/* Set the pins direction to output */
-		GPIOD->PDDR |= BLUE_SHIFT;
+		 Set the pins direction to output
+		GPIOD->PDDR |= BLUE_SHIFT;*/
 }
 
- 
+
